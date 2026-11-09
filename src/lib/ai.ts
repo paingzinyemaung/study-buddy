@@ -1,4 +1,4 @@
-import type { Message, Level, GrammarResult } from '../types';
+import type { Message, Level, GrammarResult, WordInfo } from '../types';
 import type { Lang } from '../i18n/translations';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
@@ -118,5 +118,31 @@ export async function checkGrammar(
     corrected: String(p.corrected ?? text),
     explanation: String(p.explanation ?? ''),
     mistakes: Array.isArray(p.mistakes) ? p.mistakes : [],
+  };
+}
+
+// ── Vocabulary ──
+export async function explainWord(word: string, lang: Lang): Promise<WordInfo> {
+  const system =
+    'You are an English vocabulary teacher for a Burmese learner. ' +
+    'Given an English word or short phrase, respond with ONLY a JSON object, no markdown, ' +
+    'in exactly this shape: {"partOfSpeech": string, "meaning": string, "examples": [string, string]}. ' +
+    '"partOfSpeech" is in English (for example: noun, verb, adjective, phrase). ' +
+    `"meaning" is a short, simple meaning written in ${LANG_NAMES[lang]}. ` +
+    '"examples" are exactly two short, simple English sentences that use the word.';
+
+  const raw = await generate(
+    system,
+    [{ role: 'user', parts: [{ text: word }] }],
+    true,
+  );
+
+  const p = parseJson(raw) as Partial<WordInfo>;
+  return {
+    partOfSpeech: String(p.partOfSpeech ?? ''),
+    meaning: String(p.meaning ?? ''),
+    examples: Array.isArray(p.examples)
+      ? p.examples.map(String).slice(0, 3)
+      : [],
   };
 }

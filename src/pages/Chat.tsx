@@ -3,12 +3,13 @@ import ChatBubble from '../components/ChatBubble';
 import { askAI } from '../lib/ai';
 import type { Message, Level } from '../types';
 import { useLang } from '../i18n/LanguageContext';
+import { uid } from '../lib/id';
 
 export default function Chat() {
   const { t } = useLang();
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: crypto.randomUUID(),
+      id: uid(),
       role: 'assistant',
       content: "Hi! I'm your English practice partner. Say hello to me!",
     },
@@ -28,7 +29,7 @@ export default function Chat() {
     if (!text || loading) return;
 
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: uid(),
       role: 'user',
       content: text,
     };
@@ -41,14 +42,14 @@ export default function Chat() {
       const reply = await askAI(next, level);
       setMessages((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), role: 'assistant', content: reply },
+        { id: uid(), role: 'assistant', content: reply },
       ]);
     } catch (e) {
       console.error(e);
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: uid(),
           role: 'assistant',
           content: t.chat.error,
         },

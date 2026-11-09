@@ -18,3 +18,15 @@ export type GrammarResult = {
   explanation: string;
   mistakes: GrammarMistake[];
 };
+
+export type WordInfo = {
+  partOfSpeech: string;
+  meaning: string;
+  examples: string[];
+};
+
+export type VocabItem = WordInfo & {
+  id: string;
+  word: string;
+  createdAt: number;
+};

@@ -32,6 +32,22 @@ const en = {
     clear: 'Clear',
     error: 'Could not check your text. Please try again.',
   },
+  vocab: {
+    title: 'Vocabulary',
+    subtitle: 'Save new words and let AI explain them.',
+    placeholder: 'Type an English word...',
+    add: 'Add',
+    adding: 'Adding...',
+    search: 'Search words...',
+    count: 'words',
+    empty: 'No words yet. Add your first word!',
+    noResults: 'No matching words.',
+    exists: 'This word is already saved.',
+    savedWithoutAI: 'Saved, but AI details are unavailable right now.',
+    confirmDelete: 'Delete this word?',
+    delete: 'Delete',
+    listen: 'Listen',
+  },
 };
 
 export type Dict = typeof en;
@@ -67,6 +83,22 @@ const my: Dict = {
     copied: 'ကူးပြီး!',
     clear: 'ဖျက်မည်',
     error: 'စစ်ဆေး၍မရပါ။ ပြန်ကြိုးစားကြည့်ပါ။',
+  },
+  vocab: {
+    title: 'ဝေါဟာရ',
+    subtitle: 'စကားလုံးအသစ်တွေသိမ်းပြီး AI ကို ရှင်းပြခိုင်းပါ။',
+    placeholder: 'အင်္ဂလိပ်စကားလုံး ရိုက်ပါ...',
+    add: 'ထည့်မည်',
+    adding: 'ထည့်နေသည်...',
+    search: 'စကားလုံးရှာရန်...',
+    count: 'လုံး',
+    empty: 'စကားလုံး မရှိသေးပါ။ ပထမဆုံးတစ်လုံး ထည့်ကြည့်ပါ။',
+    noResults: 'ကိုက်ညီတဲ့ စကားလုံး မတွေ့ပါ။',
+    exists: 'ဒီစကားလုံးကို သိမ်းပြီးသားပါ။',
+    savedWithoutAI: 'သိမ်းပြီးပါပြီ၊ ဒါပေမယ့် AI ရှင်းလင်းချက် ယခုမရနိုင်ပါ။',
+    confirmDelete: 'ဒီစကားလုံးကို ဖျက်မလား?',
+    delete: 'ဖျက်မည်',
+    listen: 'နားထောင်ရန်',
   },
 };
 

@@ -81,6 +81,6 @@
 
 /* မြန်မာစာ: font နဲ့ line-height (မြန်မာစာက အမြင့်ပိုရှိလို့ ကျဉ်းရင် ဖြတ်ပြီးပျောက်တတ်တယ်) */
 html[lang='my'] body {
-  font-family: 'Noto Sans Myanmar', 'Myanmar Text', system-ui, sans-serif;
+  font-family: system-ui, 'Noto Sans Myanmar', 'Myanmar Text', sans-serif;
   line-height: 1.8;
 }
