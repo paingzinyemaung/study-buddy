@@ -61,11 +61,11 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <div className="flex items-center justify-between mb-3">
-        <h1 className="text-2xl font-bold">Chat Practice</h1>
+    <div className="flex h-[calc(100dvh-11rem)] flex-col md:h-[calc(100dvh-7rem)]">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h1 className="text-xl font-bold md:text-2xl">Chat Practice</h1>
         <select
-          className="select select-bordered select-sm"
+          className="select select-sm w-36 text-base"
           value={level}
           onChange={(e) => setLevel(e.target.value as Level)}
         >
@@ -74,13 +74,13 @@ export default function Chat() {
         </select>
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-base-100 rounded-box p-4">
+      <div className="flex-1 overflow-y-auto px-1">
         {messages.map((m) => (
           <ChatBubble key={m.id} message={m} />
         ))}
         {loading && (
           <div className="chat chat-start">
-            <div className="chat-bubble">
+            <div className="chat-bubble bg-base-100 shadow-sm">
               <span className="loading loading-dots loading-sm"></span>
             </div>
           </div>
@@ -88,17 +88,18 @@ export default function Chat() {
         <div ref={bottomRef} />
       </div>
 
-      <div className="flex gap-2 mt-3">
+      <div className="mt-3 flex items-center gap-2">
         <input
-          className="input input-bordered flex-1"
+          className="input h-12 w-full flex-1 text-base"
           placeholder="Type your English here..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={loading}
+          enterKeyHint="send"
         />
         <button
-          className="btn btn-primary"
+          className="btn btn-primary h-12"
           onClick={handleSend}
           disabled={loading || !input.trim()}
         >

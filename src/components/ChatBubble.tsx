@@ -5,8 +5,10 @@ export default function ChatBubble({ message }: { message: Message }) {
   return (
     <div className={`chat ${isUser ? 'chat-end' : 'chat-start'}`}>
       <div
-        className={`chat-bubble whitespace-pre-wrap ${
-          isUser ? 'chat-bubble-primary' : ''
+        className={`chat-bubble whitespace-pre-wrap break-words text-base ${
+          isUser
+            ? 'chat-bubble-primary'
+            : 'bg-base-100 text-base-content shadow-sm'
         }`}
       >
         {message.content}

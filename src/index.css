@@ -1,2 +1,42 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: false;
+}
+
+@plugin "daisyui/theme" {
+  name: 'studybuddy';
+  default: true;
+  color-scheme: light;
+
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(97.5% 0.008 190);
+  --color-base-300: oklch(93% 0.015 190);
+  --color-base-content: oklch(28% 0.03 250);
+
+  --color-primary: oklch(55% 0.1 185);
+  --color-primary-content: oklch(99% 0.005 185);
+  --color-secondary: oklch(78% 0.15 75);
+  --color-secondary-content: oklch(28% 0.06 75);
+  --color-accent: oklch(72% 0.14 20);
+  --color-accent-content: oklch(25% 0.05 20);
+  --color-neutral: oklch(32% 0.03 250);
+  --color-neutral-content: oklch(97% 0.005 250);
+
+  --color-info: oklch(72% 0.12 235);
+  --color-info-content: oklch(25% 0.05 235);
+  --color-success: oklch(72% 0.17 155);
+  --color-success-content: oklch(25% 0.06 155);
+  --color-warning: oklch(82% 0.15 85);
+  --color-warning-content: oklch(28% 0.06 85);
+  --color-error: oklch(65% 0.2 25);
+  --color-error-content: oklch(98% 0.01 25);
+
+  --radius-selector: 1rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}

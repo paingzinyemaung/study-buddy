@@ -1,32 +1,33 @@
 import { NavLink } from 'react-router-dom';
-
-const links = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/chat', label: 'Chat' },
-  { to: '/grammar', label: 'Grammar' },
-  { to: '/vocab', label: 'Vocab' },
-  { to: '/quiz', label: 'Quiz' },
-];
+import { navLinks } from './navLinks';
 
 export default function Navbar() {
   return (
-    <div className="navbar bg-base-100 shadow-sm">
-      <div className="flex-1">
-        <span className="text-xl font-bold px-4">📚 Study Buddy</span>
+    <header className="sticky top-0 z-20 border-b border-base-300 bg-base-100/90 backdrop-blur">
+      <div className="navbar mx-auto max-w-3xl px-4">
+        <div className="flex-1">
+          <span className="text-lg font-bold text-primary">📚 Study Buddy</span>
+        </div>
+
+        {/* Desktop only */}
+        <nav className="hidden md:block">
+          <ul className="menu menu-horizontal gap-1">
+            {navLinks.map((l) => (
+              <li key={l.to}>
+                <NavLink
+                  to={l.to}
+                  end={l.to === '/'}
+                  className={({ isActive }) =>
+                    isActive ? 'menu-active text-primary' : ''
+                  }
+                >
+                  {l.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
-      <ul className="menu menu-horizontal px-1">
-        {links.map((l) => (
-          <li key={l.to}>
-            <NavLink
-              to={l.to}
-              end={l.to === '/'}
-              className={({ isActive }) => (isActive ? 'menu-active' : '')}
-            >
-              {l.label}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </header>
   );
 }
