@@ -30,3 +30,18 @@ export type VocabItem = WordInfo & {
   word: string;
   createdAt: number;
 };
+
+export type QuizQuestion = {
+  id: string;
+  kind: 'meaning' | 'blank';
+  prompt: string; // meaning: စကားလုံး၊ blank: _____ ပါတဲ့ ဝါကျ
+  options: string[];
+  answer: string;
+  wordId: string;
+};
+
+export type QuizResult = {
+  date: number;
+  score: number;
+  total: number;
+};
