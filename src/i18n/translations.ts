@@ -16,6 +16,22 @@ const en = {
     beginner: 'Beginner',
     intermediate: 'Intermediate',
   },
+  grammar: {
+    title: 'Grammar Check',
+    subtitle: 'Write an English sentence and get it checked.',
+    placeholder: 'e.g. I am go to school yesterday.',
+    check: 'Check',
+    checking: 'Checking...',
+    correct: 'Looks good!',
+    needsFix: 'Needs a fix',
+    corrected: 'Corrected',
+    explanation: 'Why',
+    mistakes: 'Mistakes',
+    copy: 'Copy',
+    copied: 'Copied!',
+    clear: 'Clear',
+    error: 'Could not check your text. Please try again.',
+  },
 };
 
 export type Dict = typeof en;
@@ -35,6 +51,22 @@ const my: Dict = {
     error: 'တောင်းပန်ပါတယ်၊ တစ်ခုခုမှားသွားပါတယ်။ ပြန်ကြိုးစားကြည့်ပါ။',
     beginner: 'အစပိုင်း',
     intermediate: 'အလယ်အလတ်',
+  },
+  grammar: {
+    title: 'သဒ္ဒါစစ်ဆေးရန်',
+    subtitle: 'အင်္ဂလိပ်ဝါကျရေးပြီး သဒ္ဒါမှန်မမှန် စစ်ကြည့်ပါ။',
+    placeholder: 'ဥပမာ - I am go to school yesterday.',
+    check: 'စစ်မည်',
+    checking: 'စစ်နေသည်...',
+    correct: 'မှန်ကန်ပါတယ်!',
+    needsFix: 'ပြင်ဆင်ရန်လိုသည်',
+    corrected: 'ပြင်ပြီးစာကြောင်း',
+    explanation: 'ရှင်းလင်းချက်',
+    mistakes: 'အမှားများ',
+    copy: 'ကူးယူ',
+    copied: 'ကူးပြီး!',
+    clear: 'ဖျက်မည်',
+    error: 'စစ်ဆေး၍မရပါ။ ပြန်ကြိုးစားကြည့်ပါ။',
   },
 };
 

@@ -21,7 +21,7 @@ export default function Navbar() {
                   to={l.to}
                   end={l.to === '/'}
                   className={({ isActive }) =>
-                    isActive ? 'menu-active text-primary' : ''
+                    isActive ? 'bg-primary text-primary-content' : ''
                   }
                 >
                   {t.nav[l.key]}
