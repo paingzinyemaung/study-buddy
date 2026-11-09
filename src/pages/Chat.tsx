@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import ChatBubble from '../components/ChatBubble';
 import { askAI } from '../lib/ai';
 import type { Message, Level } from '../types';
+import { useLang } from '../i18n/LanguageContext';
 
 export default function Chat() {
+  const { t } = useLang();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: crypto.randomUUID(),
@@ -48,7 +50,7 @@ export default function Chat() {
         {
           id: crypto.randomUUID(),
           role: 'assistant',
-          content: 'Sorry, something went wrong. Please try again.',
+          content: t.chat.error,
         },
       ]);
     } finally {
@@ -63,14 +65,14 @@ export default function Chat() {
   return (
     <div className="flex h-[calc(100dvh-11rem)] flex-col md:h-[calc(100dvh-7rem)]">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h1 className="text-xl font-bold md:text-2xl">Chat Practice</h1>
+        <h1 className="text-xl font-bold md:text-2xl">{t.chat.title}</h1>
         <select
           className="select select-sm w-36 text-base"
           value={level}
           onChange={(e) => setLevel(e.target.value as Level)}
         >
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
+          <option value="beginner">{t.chat.beginner}</option>
+          <option value="intermediate">{t.chat.intermediate}</option>
         </select>
       </div>
 
@@ -91,7 +93,7 @@ export default function Chat() {
       <div className="mt-3 flex items-center gap-2">
         <input
           className="input h-12 w-full flex-1 text-base"
-          placeholder="Type your English here..."
+          placeholder={t.chat.placeholder}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -103,7 +105,7 @@ export default function Chat() {
           onClick={handleSend}
           disabled={loading || !input.trim()}
         >
-          Send
+          {t.chat.send}
         </button>
       </div>
     </div>
