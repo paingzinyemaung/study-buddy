@@ -4,6 +4,7 @@ import { askAI } from '../lib/ai';
 import type { Message, Level } from '../types';
 import { useLang } from '../i18n/LanguageContext';
 import { uid } from '../lib/id';
+import { logActivity } from '../lib/activity';
 
 export default function Chat() {
   const { t } = useLang();
@@ -37,6 +38,7 @@ export default function Chat() {
     setMessages(next);
     setInput('');
     setLoading(true);
+    logActivity();
 
     try {
       const reply = await askAI(next, level);

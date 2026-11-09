@@ -69,6 +69,22 @@ const en = {
     best: 'Best',
     listen: 'Listen',
   },
+  dashboard: {
+    welcome: 'Welcome back! 👋',
+    tagline: 'Practice English a little every day.',
+    streak: 'Day streak',
+    streakUnit: 'days',
+    today: "Today's activities",
+    words: 'Words saved',
+    best: 'Best quiz score',
+    quick: 'Start practicing',
+    chatDesc: 'Talk with AI in English',
+    grammarDesc: 'Fix your sentences',
+    vocabDesc: 'Save and learn words',
+    quizDesc: 'Test what you learned',
+    recent: 'Recently added words',
+    noWords: 'Your saved words will show up here.',
+  },
 };
 
 export type Dict = typeof en;
@@ -142,6 +158,22 @@ const my: Dict = {
     tryAgain: 'ထပ်လုပ်မည်',
     best: 'အကောင်းဆုံး',
     listen: 'နားထောင်ရန်',
+  },
+  dashboard: {
+    welcome: 'ပြန်လာတာ ကြိုဆိုပါတယ်! 👋',
+    tagline: 'နေ့တိုင်း အင်္ဂလိပ်စာ နည်းနည်းချင်း လေ့ကျင့်ပါ။',
+    streak: 'ဆက်တိုက်လေ့ကျင့်ရက်',
+    streakUnit: 'ရက်',
+    today: 'ဒီနေ့ လုပ်ခဲ့တာ',
+    words: 'သိမ်းထားတဲ့ စကားလုံး',
+    best: 'အကောင်းဆုံး ရမှတ်',
+    quick: 'လေ့ကျင့်ကြမယ်',
+    chatDesc: 'AI နဲ့ အင်္ဂလိပ်လို စကားပြောပါ',
+    grammarDesc: 'ဝါကျတွေကို ပြင်ပါ',
+    vocabDesc: 'စကားလုံးသိမ်းပြီး လေ့လာပါ',
+    quizDesc: 'သင်ယူထားတာ စစ်ကြည့်ပါ',
+    recent: 'မကြာသေးခင်က ထည့်ထားတဲ့ စကားလုံးများ',
+    noWords: 'သိမ်းထားတဲ့ စကားလုံးတွေ ဒီမှာ ပေါ်ပါမယ်။',
   },
 };
 

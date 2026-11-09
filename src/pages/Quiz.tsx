@@ -5,6 +5,7 @@ import { useLang } from '../i18n/LanguageContext';
 import { buildQuiz, canQuiz, loadResults, saveResult } from '../lib/quiz';
 import { speak } from '../lib/speech';
 import type { QuizQuestion } from '../types';
+import { logActivity } from '../lib/activity';
 
 type Phase = 'start' | 'playing' | 'done';
 
@@ -40,6 +41,7 @@ export default function Quiz() {
   function handleNext() {
     if (index + 1 >= questions.length) {
       saveResult({ date: Date.now(), score, total: questions.length });
+      logActivity();
       setPhase('done');
     } else {
       setIndex((i) => i + 1);

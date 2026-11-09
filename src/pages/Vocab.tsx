@@ -3,6 +3,7 @@ import { explainWord } from '../lib/ai';
 import { speak } from '../lib/speech';
 import { useVocab } from '../hooks/useVocab';
 import { useLang } from '../i18n/LanguageContext';
+import { logActivity } from '../lib/activity';
 
 type Notice = { type: 'info' | 'warning'; text: string };
 
@@ -34,6 +35,7 @@ export default function Vocab() {
       add({ word: w, partOfSpeech: '', meaning: '', examples: [] });
       setNotice({ type: 'info', text: t.vocab.savedWithoutAI });
     } finally {
+      logActivity();
       setLoading(false);
       setWord('');
     }

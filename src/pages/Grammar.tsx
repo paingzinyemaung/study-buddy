@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { checkGrammar } from '../lib/ai';
 import { useLang } from '../i18n/LanguageContext';
 import type { GrammarResult } from '../types';
+import { logActivity } from '../lib/activity';
 
 const MAX_LENGTH = 500;
 
@@ -22,6 +23,7 @@ export default function Grammar() {
     setResult(null);
     try {
       setResult(await checkGrammar(input, lang));
+      logActivity();
     } catch (e) {
       console.error(e);
       setError(t.grammar.error);
