@@ -1,29 +1,33 @@
 import type { Message, Level, GrammarResult, WordInfo } from '../types';
 import type { Lang } from '../i18n/translations';
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-const MODEL =
+// type GeminiContent = { role: 'user' | 'model'; parts: { text: string }[] };
+
+// ── Gemini ကို ခေါ်တဲ့ အခြေခံ function (အားလုံးက ဒီကနေတစ်ဆင့် သွားမယ်) ──
+// ── Gemini ကို ခေါ်တဲ့ အပိုင်း ──
+
+// Local dev (npm run dev) မှာပဲ .env key နဲ့ တိုက်ရိုက်ခေါ်မယ်။
+// Production build မှာ import.meta.env.DEV က false ဖြစ်လို့ ဒီအပိုင်း ပါမလာဘူး
+const DEV_KEY = import.meta.env.DEV
+  ? (import.meta.env.VITE_GEMINI_API_KEY as string | undefined)
+  : undefined;
+const DEV_MODEL =
   (import.meta.env.VITE_GEMINI_MODEL as string | undefined) ??
   'gemini-3.5-flash-lite';
 
 type GeminiContent = { role: 'user' | 'model'; parts: { text: string }[] };
 
-// ── Gemini ကို ခေါ်တဲ့ အခြေခံ function (အားလုံးက ဒီကနေတစ်ဆင့် သွားမယ်) ──
-async function generate(
+async function callGeminiDirect(
+  key: string,
   system: string,
   contents: GeminiContent[],
-  json = false,
+  json: boolean,
 ): Promise<string> {
-  if (!API_KEY) throw new Error('Missing VITE_GEMINI_API_KEY in .env');
-
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${DEV_MODEL}:generateContent`,
     {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': API_KEY,
-      },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: system }] },
         contents,
@@ -34,18 +38,46 @@ async function generate(
     },
   );
 
-  if (!res.ok) {
-    const detail = await res.text();
-    throw new Error(`Gemini ${res.status}: ${detail}`);
-  }
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
 
   const data = await res.json();
   const text: string | undefined = data.candidates?.[0]?.content?.parts
     ?.map((p: { text?: string }) => p.text ?? '')
     .join('');
-
   if (!text) throw new Error('Empty response from Gemini');
   return text;
+}
+
+// Production: ကိုယ့် server (/api/gemini) ကနေတစ်ဆင့် ခေါ်မယ်
+async function callProxy(
+  system: string,
+  contents: GeminiContent[],
+  json: boolean,
+): Promise<string> {
+  const res = await fetch('/api/gemini', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system, contents, json }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(`API ${res.status}: ${err.error ?? 'request failed'}`);
+  }
+
+  const data = await res.json();
+  if (!data.text) throw new Error('Empty response');
+  return data.text as string;
+}
+
+async function generate(
+  system: string,
+  contents: GeminiContent[],
+  json = false,
+): Promise<string> {
+  return DEV_KEY
+    ? callGeminiDirect(DEV_KEY, system, contents, json)
+    : callProxy(system, contents, json);
 }
 
 // ── Chat ──
