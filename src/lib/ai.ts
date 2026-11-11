@@ -1,5 +1,6 @@
 import type { Message, Level, GrammarResult, WordInfo } from '../types';
 import type { Lang } from '../i18n/translations';
+import { getAccessCode, requestAccessCode } from './access';
 
 // type GeminiContent = { role: 'user' | 'model'; parts: { text: string }[] };
 
@@ -56,9 +57,17 @@ async function callProxy(
 ): Promise<string> {
   const res = await fetch('/api/gemini', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-access-code': getAccessCode(),
+    },
     body: JSON.stringify({ system, contents, json }),
   });
+
+  if (res.status === 401) {
+    requestAccessCode(); // code ထည့်ခိုင်းတဲ့ dialog ကို ဖွင့်ခိုင်းမယ်
+    throw new Error('API 401: access code required');
+  }
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

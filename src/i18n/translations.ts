@@ -85,6 +85,14 @@ const en = {
     recent: 'Recently added words',
     noWords: 'Your saved words will show up here.',
   },
+  access: {
+    title: 'Access code required',
+    desc: 'AI features use a shared quota. Enter the access code you were given.',
+    placeholder: 'Access code',
+    save: 'Save',
+    cancel: 'Cancel',
+    retry: 'After saving, send your request again.',
+  },
 };
 
 export type Dict = typeof en;
@@ -174,6 +182,14 @@ const my: Dict = {
     quizDesc: 'သင်ယူထားတာ စစ်ကြည့်ပါ',
     recent: 'မကြာသေးခင်က ထည့်ထားတဲ့ စကားလုံးများ',
     noWords: 'သိမ်းထားတဲ့ စကားလုံးတွေ ဒီမှာ ပေါ်ပါမယ်။',
+  },
+  access: {
+    title: 'Access code လိုအပ်ပါတယ်',
+    desc: 'AI feature တွေက မျှဝေသုံးရတဲ့ quota ကို သုံးတာမို့ ပေးထားတဲ့ access code ကို ထည့်ပါ။',
+    placeholder: 'Access code',
+    save: 'သိမ်းမည်',
+    cancel: 'မလုပ်တော့ပါ',
+    retry: 'သိမ်းပြီးရင် ပြန်ပို့ကြည့်ပါ။',
   },
 };
 

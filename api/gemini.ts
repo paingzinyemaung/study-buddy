@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 type Part = { text: string };
@@ -26,6 +27,30 @@ function isRateLimited(ip: string): boolean {
   recent.push(now);
   hits.set(ip, recent);
   return recent.length > RATE_MAX;
+}
+
+// Access code မှားတာကို ရေတွက်ခြင်း (၁၀ မိနစ်အတွင်း ၁၀ ကြိမ်ထိ)
+const FAIL_WINDOW_MS = 10 * 60_000;
+const FAIL_MAX = 10;
+const fails = new Map<string, number[]>();
+
+function recentFails(ip: string): number {
+  const now = Date.now();
+  return (fails.get(ip) ?? []).filter((t) => now - t < FAIL_WINDOW_MS).length;
+}
+
+function recordFail(ip: string) {
+  const now = Date.now();
+  const recent = (fails.get(ip) ?? []).filter((t) => now - t < FAIL_WINDOW_MS);
+  recent.push(now);
+  fails.set(ip, recent);
+}
+
+// အချိန်တူညီစွာ နှိုင်းယှဉ်ခြင်း (တိုက်ခိုက်သူက စာလုံးတစ်လုံးချင်း ခန့်မှန်းလို့မရအောင်)
+function safeEqual(a: string, b: string): boolean {
+  const A = Buffer.from(a);
+  const B = Buffer.from(b);
+  return A.length === B.length && timingSafeEqual(A, B);
 }
 
 function isContent(c: unknown): c is Content {
@@ -130,7 +155,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const geminiKey = process.env.GEMINI_API_KEY;
   const openRouterKey = process.env.OPENROUTER_API_KEY;
-  if (!geminiKey && !openRouterKey) {
+  const accessCode = process.env.APP_ACCESS_CODE;
+  if ((!geminiKey && !openRouterKey) || !accessCode) {
     return res.status(500).json({ error: 'Server is not configured' });
   }
 
@@ -141,6 +167,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res
       .status(429)
       .json({ error: 'Too many requests, please slow down' });
+  }
+
+  // ── Access code စစ်ခြင်း ──
+  if (recentFails(ip) >= FAIL_MAX) {
+    return res
+      .status(429)
+      .json({ error: 'Too many wrong codes, try again later' });
+  }
+  const sent = req.headers['x-access-code'];
+  if (typeof sent !== 'string' || !safeEqual(sent, accessCode)) {
+    recordFail(ip);
+    return res.status(401).json({ error: 'Access code required' });
   }
 
   const { system, contents, json } = (req.body ?? {}) as {

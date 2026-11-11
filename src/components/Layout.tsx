@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import BottomNav from './BottomNav';
+import AccessDialog from './AccessDialog';
 
 export default function Layout() {
   return (
@@ -10,6 +11,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <BottomNav />
+      <AccessDialog />
     </div>
   );
 }
