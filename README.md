@@ -1,35 +1,33 @@
-# React + TypeScript + Vite
+# 📚 Study Buddy
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A mobile-first AI English learning app for Burmese speakers. Practice conversation, fix your grammar, build your vocabulary and test yourself, all in one place.
 
-Currently, two official plugins are available:
+**Live demo:** https://stdy-buddy.vercel.app (AI features need an access code)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Chat practice**: talk with an AI partner in English at Beginner or Intermediate level
+- **Grammar check**: get a corrected sentence, a list of mistakes, and simple explanations in Burmese or English
+- **Vocabulary**: save words and let AI add the part of speech, meaning and example sentences; search, delete and listen to pronunciation
+- **Quiz**: meaning and fill-in-the-blank questions built from your saved words
+- **Dashboard**: day streak, today's activity, words saved and best quiz score
+- **Light and dark mode**, and an English / မြန်မာ interface
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Tech stack
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+- React, TypeScript, Vite
+- Tailwind CSS, DaisyUI
+- React Router
+- Vercel serverless function
+- Gemini API, with OpenRouter free models as a fallback
 
-## Expanding the Oxlint configuration
+## How it works
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- AI requests go through a serverless function (`/api/gemini`), so API keys stay on the server and never reach the browser.
+- The function checks an access code, limits request size and rate, and only then calls the AI.
+- If Gemini fails or hits its free limit, the request falls back to OpenRouter.
+- Vocabulary, quiz results and streaks are stored in the browser (`localStorage`). There are no accounts and no database.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## About
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Built as a practice project to get back into React and TypeScript.
