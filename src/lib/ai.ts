@@ -99,9 +99,11 @@ export async function askAI(
   messages: Message[],
   level: Level,
 ): Promise<string> {
+  // နောက်ဆုံး ၁၂ စာပဲ ပို့မယ် (token သက်သာ၊ server limit မကျော်အောင်)
+  const recent = messages.slice(-12);
   // Gemini က ပထမဆုံး message ကို user ဖြစ်ရမယ်
-  const firstUser = messages.findIndex((m) => m.role === 'user');
-  const history = firstUser === -1 ? [] : messages.slice(firstUser);
+  const firstUser = recent.findIndex((m) => m.role === 'user');
+  const history = firstUser === -1 ? [] : recent.slice(firstUser);
 
   return generate(
     CHAT_PROMPTS[level],

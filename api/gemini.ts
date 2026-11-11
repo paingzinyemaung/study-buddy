@@ -2,15 +2,21 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 type Part = { text: string };
 type Content = { role: 'user' | 'model'; parts: Part[] };
+type Result = { ok: true; text: string } | { ok: false; status: number };
 
-const MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.5-flash-lite';
+const OPENROUTER_MODELS = (process.env.OPENROUTER_MODELS ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+  .slice(0, 3);
 
-// ကန့်သတ်ချက်များ (လူတိုင်း မသုံးစားနိုင်အောင်)
+// ကန့်သတ်ချက်များ
 const MAX_SYSTEM_CHARS = 3000;
 const MAX_TOTAL_CHARS = 8000;
 const MAX_TURNS = 40;
 const RATE_WINDOW_MS = 60_000;
-const RATE_MAX = 20; // IP တစ်ခုကို တစ်မိနစ် ၂၀ ကြိမ်
+const RATE_MAX = 20;
 
 const hits = new Map<string, number[]>();
 
@@ -33,13 +39,98 @@ function isContent(c: unknown): c is Content {
   );
 }
 
+// ── Provider ၁: Gemini ──
+async function callGemini(
+  apiKey: string,
+  system: string,
+  turns: Content[],
+  json: boolean,
+): Promise<Result> {
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: turns,
+          ...(json
+            ? { generationConfig: { responseMimeType: 'application/json' } }
+            : {}),
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      console.error('Gemini error', res.status, await res.text());
+      return { ok: false, status: res.status };
+    }
+
+    const data = (await res.json()) as {
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
+    };
+    const text =
+      data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('') ??
+      '';
+    return text ? { ok: true, text } : { ok: false, status: 502 };
+  } catch (err) {
+    console.error('Gemini fetch failed', err);
+    return { ok: false, status: 502 };
+  }
+}
+
+// ── Provider ၂: OpenRouter (အရန်) ──
+async function callOpenRouter(
+  apiKey: string,
+  system: string,
+  turns: Content[],
+): Promise<Result> {
+  try {
+    const messages = [
+      { role: 'system', content: system },
+      ...turns.map((c) => ({
+        role: c.role === 'model' ? 'assistant' : 'user',
+        content: c.parts.map((p) => p.text).join(''),
+      })),
+    ];
+
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({ models: OPENROUTER_MODELS, messages }),
+    });
+
+    if (!res.ok) {
+      console.error('OpenRouter error', res.status, await res.text());
+      return { ok: false, status: res.status };
+    }
+
+    const data = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    const text = data.choices?.[0]?.message?.content ?? '';
+    return text ? { ok: true, text } : { ok: false, status: 502 };
+  } catch (err) {
+    console.error('OpenRouter fetch failed', err);
+    return { ok: false, status: 502 };
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const openRouterKey = process.env.OPENROUTER_API_KEY;
+  if (!geminiKey && !openRouterKey) {
     return res.status(500).json({ error: 'Server is not configured' });
   }
 
@@ -80,47 +171,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(413).json({ error: 'Request too large' });
   }
 
-  try {
-    const upstream = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents: turns,
-          ...(json === true
-            ? { generationConfig: { responseMimeType: 'application/json' } }
-            : {}),
-        }),
-      },
-    );
+  let provider: 'gemini' | 'openrouter' = 'gemini';
+  let result: Result = geminiKey
+    ? await callGemini(geminiKey, system, turns, json === true)
+    : { ok: false, status: 500 };
 
-    if (!upstream.ok) {
-      // အသေးစိတ်ကို server log မှာပဲထား၊ user ကို မပြဘူး
-      console.error('Gemini error', upstream.status, await upstream.text());
-      const status = upstream.status === 429 ? 429 : 502;
-      return res.status(status).json({
-        error:
-          status === 429
-            ? 'AI limit reached, try again later'
-            : 'AI request failed',
-      });
-    }
-
-    const data = await upstream.json();
-    const text: string =
-      data.candidates?.[0]?.content?.parts
-        ?.map((p: { text?: string }) => p.text ?? '')
-        .join('') ?? '';
-
-    if (!text) return res.status(502).json({ error: 'Empty AI response' });
-    return res.status(200).json({ text });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Server error' });
+  // Gemini ပျက်ရင် OpenRouter ကို ကူးခေါ်မယ်
+  if (!result.ok && openRouterKey && OPENROUTER_MODELS.length > 0) {
+    console.warn('Falling back to OpenRouter, Gemini status:', result.status);
+    provider = 'openrouter';
+    result = await callOpenRouter(openRouterKey, system, turns);
   }
+
+  if (result.ok) {
+    return res.status(200).json({ text: result.text, provider });
+  }
+
+  const status = result.status === 429 ? 429 : 502;
+  return res.status(status).json({
+    error:
+      status === 429
+        ? 'AI limit reached, try again later'
+        : 'AI request failed',
+  });
 }

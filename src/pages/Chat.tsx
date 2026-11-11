@@ -102,6 +102,7 @@ export default function Chat() {
           onKeyDown={handleKeyDown}
           disabled={loading}
           enterKeyHint="send"
+          maxLength={500}
         />
         <button
           className="btn btn-primary h-12"
